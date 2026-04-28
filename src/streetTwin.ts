@@ -117,11 +117,11 @@ const renderStreetTwin = (context: AppContext, elementsList: OverpassElement[]):
   const minorRoadColor = Color.fromCssColorString("#f5f0df").withAlpha(0.66);
 
   const buildingElements = elementsList
-    .filter((item) => item.type === "way" && item.tags?.building && item.geometry?.length && item.geometry.length > 3)
+    .filter((item) => item.type === "way" && item.tags?.building && item.geometry?.length > 3)
     .slice(0, 220);
 
   const roadElements = elementsList
-    .filter((item) => item.type === "way" && item.tags?.highway && item.geometry?.length && item.geometry.length > 1)
+    .filter((item) => item.type === "way" && item.tags?.highway && item.geometry?.length > 1)
     .slice(0, 220);
 
   for (const item of buildingElements) {
