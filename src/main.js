@@ -27,6 +27,36 @@ const EARTH_RADIUS_METERS = 6378137;
 const MAX_DETAIL_FEATURES = 420;
 const DETAIL_ALTITUDE_LIMIT = 18000;
 const DETAIL_RELOAD_MS = 9000;
+// Tuned via visual checks to keep a dark, desaturated basemap while preserving coastline detail.
+const NIGHT_BASE_STYLE = {
+  brightness: 0.22,
+  contrast: 1.18,
+  saturation: 0.24,
+  gamma: 0.78,
+};
+const DAY_BASE_STYLE = {
+  brightness: 1,
+  contrast: 1,
+  saturation: 1,
+  gamma: 1,
+};
+// Boost city lights so they read clearly against the dimmed basemap without overblooming.
+const NIGHT_LIGHT_STYLE = {
+  brightness: 1.15,
+  contrast: 1.25,
+  saturation: 1.35,
+  gamma: 0.92,
+};
+const DAY_LIGHT_STYLE = {
+  brightness: 1,
+  contrast: 1,
+  saturation: 1,
+  gamma: 1,
+};
+// Dim label intensity for night mode readability.
+const NIGHT_LABEL_ALPHA_SCALE = 0.58;
+// Cap city-light blend to avoid washing out the basemap at low altitude.
+const NIGHT_LIGHT_LAYER_MAX_ALPHA = 0.85;
 
 const PLACES = {
   "new-york": {
@@ -77,6 +107,7 @@ const state = {
   detailAbort: null,
   detailEntities: [],
   selectedMarker: null,
+  lastNightModeState: false,
 };
 
 const elements = {
@@ -226,6 +257,7 @@ function attachEvents() {
   });
   elements.nightToggle.addEventListener("change", (event) => {
     state.night = event.target.checked;
+    updateNightStyling();
     updateLayerBlend();
   });
   elements.streetTwinToggle.addEventListener("change", (event) => {
@@ -444,19 +476,44 @@ function setQuality(quality) {
   viewer.scene.requestRender();
 }
 
+function applyImageryStyle(layer, style) {
+  layer.brightness = style.brightness;
+  layer.contrast = style.contrast;
+  layer.saturation = style.saturation;
+  layer.gamma = style.gamma;
+}
+
+function updateNightStyling() {
+  if (state.lastNightModeState === state.night) {
+    return;
+  }
+
+  state.lastNightModeState = state.night;
+  const baseStyle = state.night ? NIGHT_BASE_STYLE : DAY_BASE_STYLE;
+  applyImageryStyle(layers.satellite, baseStyle);
+  applyImageryStyle(layers.blue, baseStyle);
+  applyImageryStyle(layers.street, baseStyle);
+
+  const nightStyle = state.night ? NIGHT_LIGHT_STYLE : DAY_LIGHT_STYLE;
+  applyImageryStyle(layers.night, nightStyle);
+}
+
 function updateLayerBlend() {
   const altitude = viewer.camera.positionCartographic.height;
   const streetBlend = state.labels ? clamp(inverseLerp(2500000, 45000, altitude), 0, 1) : 0;
-  const nightBlend = state.night ? clamp(inverseLerp(9000000, 1400000, altitude), 0.0, 0.5) : 0;
+  const nightBlend = state.night
+    ? clamp(inverseLerp(9000000, 1400000, altitude), 0.0, NIGHT_LIGHT_LAYER_MAX_ALPHA)
+    : 0;
+  const labelAlphaScale = state.night ? NIGHT_LABEL_ALPHA_SCALE : 1;
 
   layers.labels.show = state.labels && state.base !== "street";
-  layers.labels.alpha = state.base === "street" ? 0 : 0.12 + streetBlend * 0.54;
+  layers.labels.alpha = (state.base === "street" ? 0 : 0.12 + streetBlend * 0.54) * labelAlphaScale;
   layers.night.show = state.night;
   layers.night.alpha = nightBlend;
 
   if (state.base === "blue" && altitude < 1200000) {
     layers.labels.show = state.labels;
-    layers.labels.alpha = 0.62;
+    layers.labels.alpha = 0.62 * labelAlphaScale;
   }
 
   viewer.scene.requestRender();
