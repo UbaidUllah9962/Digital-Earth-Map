@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive 3D digital twin of Earth with satellite imagery, global zoom, search, and city street overlays."
+    />
+    <title>Digital Earth</title>
+  </head>
+  <body>
+    <div id="app">
+      <main id="earth" aria-label="Interactive 3D Earth viewer"></main>
+
+      <div class="loading-screen" id="loadingScreen" aria-live="polite">
+        <div class="loading-mark"></div>
+        <p>Streaming Earth</p>
+      </div>
+
+      <header class="topbar" aria-label="Primary controls">
+        <a class="brand" href="#" id="homeButton" aria-label="Return to orbit view">
+          <span class="brand-mark"></span>
+          <span>
+            <strong>Digital Earth</strong>
+            <small id="modeLabel">Orbit view</small>
+          </span>
+        </a>
+
+        <form class="search" id="searchForm" autocomplete="off">
+          <label class="visually-hidden" for="searchInput">Search for a city, address, or landmark</label>
+          <input id="searchInput" type="search" placeholder="Search city, street, landmark" />
+          <button type="submit">Go</button>
+          <div class="search-results" id="searchResults" role="listbox"></div>
+        </form>
+      </header>
+
+      <nav class="place-rail" aria-label="Quick destinations">
+        <button type="button" data-place="new-york">New York</button>
+        <button type="button" data-place="tokyo">Tokyo</button>
+        <button type="button" data-place="dubai">Dubai</button>
+        <button type="button" data-place="paris">Paris</button>
+        <button type="button" data-place="rio">Rio</button>
+      </nav>
+
+      <aside class="control-panel" aria-label="Map controls">
+        <section>
+          <h2>Layers</h2>
+          <div class="segmented" role="group" aria-label="Base layer">
+            <button type="button" class="is-active" data-base="satellite">Satellite</button>
+            <button type="button" data-base="blue">Blue Marble</button>
+            <button type="button" data-base="street">Street Map</button>
+          </div>
+        </section>
+
+        <section class="toggles">
+          <label>
+            <input type="checkbox" id="labelsToggle" checked />
+            <span>Street labels</span>
+          </label>
+          <label>
+            <input type="checkbox" id="nightToggle" />
+            <span>Night lights</span>
+          </label>
+          <label>
+            <input type="checkbox" id="streetTwinToggle" checked />
+            <span>3D streets</span>
+          </label>
+        </section>
+
+        <section>
+          <h2>Quality</h2>
+          <div class="segmented" role="group" aria-label="Rendering quality">
+            <button type="button" data-quality="lean">Lean</button>
+            <button type="button" class="is-active" data-quality="balanced">Balanced</button>
+            <button type="button" data-quality="sharp">Sharp</button>
+          </div>
+        </section>
+
+        <section class="detail-actions">
+          <button type="button" id="loadDetailButton">Load Local Twin</button>
+          <button type="button" id="clearDetailButton">Clear</button>
+        </section>
+
+        <p class="source-note">
+          Imagery and map data stream from public Earth, OSM, CARTO, NASA, and Esri services.
+        </p>
+      </aside>
+
+      <footer class="telemetry" aria-label="Camera telemetry">
+        <span>
+          <b>Altitude</b>
+          <output id="altitudeOutput">--</output>
+        </span>
+        <span>
+          <b>Center</b>
+          <output id="centerOutput">--</output>
+        </span>
+        <span>
+          <b>Detail</b>
+          <output id="detailOutput">Ready</output>
+        </span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
