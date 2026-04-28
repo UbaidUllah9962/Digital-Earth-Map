@@ -8,6 +8,12 @@ import { clearStreetTwin, maybeLoadStreetTwin } from "./streetTwin";
 import { updateTelemetry } from "./telemetry";
 import { throttle } from "./utils";
 
+const isBaseLayer = (value: string): value is BaseLayer =>
+  value === "satellite" || value === "blue" || value === "street";
+
+const isQualitySetting = (value: string): value is QualitySetting =>
+  value === "lean" || value === "balanced" || value === "sharp";
+
 export const attachEvents = (context: AppContext): void => {
   const { elements, state, viewer } = context;
 
@@ -45,8 +51,8 @@ export const attachEvents = (context: AppContext): void => {
 
   document.querySelectorAll("[data-base]").forEach((button) => {
     button.addEventListener("click", () => {
-      const base = (button as HTMLButtonElement).dataset.base as BaseLayer | undefined;
-      if (base) {
+      const base = (button as HTMLButtonElement).dataset.base;
+      if (base && isBaseLayer(base)) {
         setBaseLayer(context, base);
       }
     });
@@ -54,8 +60,8 @@ export const attachEvents = (context: AppContext): void => {
 
   document.querySelectorAll("[data-quality]").forEach((button) => {
     button.addEventListener("click", () => {
-      const quality = (button as HTMLButtonElement).dataset.quality as QualitySetting | undefined;
-      if (quality) {
+      const quality = (button as HTMLButtonElement).dataset.quality;
+      if (quality && isQualitySetting(quality)) {
         setQuality(context, quality);
       }
     });
