@@ -56,7 +56,7 @@ const DAY_LIGHT_STYLE = {
 // Dim label intensity for night mode readability.
 const NIGHT_LABEL_ALPHA_SCALE = 0.58;
 // Cap city-light blend to avoid washing out the basemap at low altitude.
-const NIGHT_LIGHT_MAX_ALPHA = 0.85;
+const NIGHT_LIGHT_LAYER_MAX_ALPHA = 0.85;
 
 const PLACES = {
   "new-york": {
@@ -107,6 +107,7 @@ const state = {
   detailAbort: null,
   detailEntities: [],
   selectedMarker: null,
+  nightStyleApplied: null,
 };
 
 const elements = {
@@ -482,6 +483,11 @@ function applyImageryStyle(layer, style) {
 }
 
 function updateNightStyling() {
+  if (state.nightStyleApplied === state.night) {
+    return;
+  }
+
+  state.nightStyleApplied = state.night;
   const baseStyle = state.night ? NIGHT_BASE_STYLE : DAY_BASE_STYLE;
   applyImageryStyle(layers.satellite, baseStyle);
   applyImageryStyle(layers.blue, baseStyle);
@@ -495,7 +501,7 @@ function updateLayerBlend() {
   const altitude = viewer.camera.positionCartographic.height;
   const streetBlend = state.labels ? clamp(inverseLerp(2500000, 45000, altitude), 0, 1) : 0;
   const nightBlend = state.night
-    ? clamp(inverseLerp(9000000, 1400000, altitude), 0.0, NIGHT_LIGHT_MAX_ALPHA)
+    ? clamp(inverseLerp(9000000, 1400000, altitude), 0.0, NIGHT_LIGHT_LAYER_MAX_ALPHA)
     : 0;
   const labelAlphaScale = state.night ? NIGHT_LABEL_ALPHA_SCALE : 1;
 
