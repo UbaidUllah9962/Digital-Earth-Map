@@ -27,7 +27,7 @@ const EARTH_RADIUS_METERS = 6378137;
 const MAX_DETAIL_FEATURES = 420;
 const DETAIL_ALTITUDE_LIMIT = 18000;
 const DETAIL_RELOAD_MS = 9000;
-// Tuned to keep a dark, desaturated basemap while preserving coastline detail.
+// Tuned via visual checks to keep a dark, desaturated basemap while preserving coastline detail.
 const NIGHT_BASE_STYLE = {
   brightness: 0.22,
   contrast: 1.18,
@@ -40,7 +40,7 @@ const DAY_BASE_STYLE = {
   saturation: 1,
   gamma: 1,
 };
-// Boost city lights so they read clearly against the dimmed basemap.
+// Boost city lights so they read clearly against the dimmed basemap without overblooming.
 const NIGHT_LIGHT_STYLE = {
   brightness: 1.15,
   contrast: 1.25,
@@ -53,7 +53,9 @@ const DAY_LIGHT_STYLE = {
   saturation: 1,
   gamma: 1,
 };
+// Dim label intensity for night mode readability.
 const NIGHT_LABEL_ALPHA_SCALE = 0.58;
+// Cap city-light blend to avoid washing out the basemap at low altitude.
 const NIGHT_LIGHT_MAX_ALPHA = 0.85;
 
 const PLACES = {
