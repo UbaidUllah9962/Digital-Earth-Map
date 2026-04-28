@@ -76,5 +76,4 @@ export const PLACES = {
 
 export type PlaceKey = keyof typeof PLACES;
 
-export const isPlaceKey = (value: string): value is PlaceKey =>
-  Object.prototype.hasOwnProperty.call(PLACES, value);
+export const isPlaceKey = (value: string): value is PlaceKey => value in PLACES;
