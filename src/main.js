@@ -107,7 +107,7 @@ const state = {
   detailAbort: null,
   detailEntities: [],
   selectedMarker: null,
-  nightStyleApplied: null,
+  lastNightStyle: false,
 };
 
 const elements = {
@@ -483,11 +483,11 @@ function applyImageryStyle(layer, style) {
 }
 
 function updateNightStyling() {
-  if (state.nightStyleApplied === state.night) {
+  if (state.lastNightStyle === state.night) {
     return;
   }
 
-  state.nightStyleApplied = state.night;
+  state.lastNightStyle = state.night;
   const baseStyle = state.night ? NIGHT_BASE_STYLE : DAY_BASE_STYLE;
   applyImageryStyle(layers.satellite, baseStyle);
   applyImageryStyle(layers.blue, baseStyle);
