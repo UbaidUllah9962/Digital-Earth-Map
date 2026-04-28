@@ -1,6 +1,6 @@
 import { ScreenSpaceEventHandler, ScreenSpaceEventType } from "cesium";
 import type { AppContext, BaseLayer, QualitySetting } from "./types";
-import { PLACES } from "./constants";
+import { PLACES, isPlaceKey } from "./constants";
 import { setBaseLayer, setQuality, updateLayerBlend, updateNightStyling } from "./layers";
 import { flyHome, flyToPlace } from "./navigation";
 import { geocode, renderSearchError, renderSearchResults } from "./search";
@@ -36,9 +36,9 @@ export const attachEvents = (context: AppContext): void => {
 
   document.querySelectorAll("[data-place]").forEach((button) => {
     button.addEventListener("click", () => {
-      const place = PLACES[(button as HTMLButtonElement).dataset.place ?? ""];
-      if (place) {
-        flyToPlace(context, place);
+      const placeKey = (button as HTMLButtonElement).dataset.place;
+      if (placeKey && isPlaceKey(placeKey)) {
+        flyToPlace(context, PLACES[placeKey]);
       }
     });
   });

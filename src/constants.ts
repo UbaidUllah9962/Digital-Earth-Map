@@ -36,7 +36,7 @@ export const DAY_LIGHT_STYLE: Style = {
 export const NIGHT_LABEL_ALPHA_SCALE = 0.58;
 export const NIGHT_LIGHT_LAYER_MAX_ALPHA = 0.85;
 
-export const PLACES: Record<string, Place> = {
+export const PLACES = {
   "new-york": {
     name: "Times Square, New York",
     lat: 40.758,
@@ -72,4 +72,9 @@ export const PLACES: Record<string, Place> = {
     altitude: 2600,
     heading: 112,
   },
-};
+} satisfies Record<string, Place>;
+
+export type PlaceKey = keyof typeof PLACES;
+
+export const isPlaceKey = (value: string): value is PlaceKey =>
+  Object.prototype.hasOwnProperty.call(PLACES, value);
