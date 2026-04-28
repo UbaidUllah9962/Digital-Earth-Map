@@ -107,7 +107,7 @@ const state = {
   detailAbort: null,
   detailEntities: [],
   selectedMarker: null,
-  lastNightStyle: false,
+  lastNightModeState: false,
 };
 
 const elements = {
@@ -257,6 +257,7 @@ function attachEvents() {
   });
   elements.nightToggle.addEventListener("change", (event) => {
     state.night = event.target.checked;
+    updateNightStyling();
     updateLayerBlend();
   });
   elements.streetTwinToggle.addEventListener("change", (event) => {
@@ -483,11 +484,11 @@ function applyImageryStyle(layer, style) {
 }
 
 function updateNightStyling() {
-  if (state.lastNightStyle === state.night) {
+  if (state.lastNightModeState === state.night) {
     return;
   }
 
-  state.lastNightStyle = state.night;
+  state.lastNightModeState = state.night;
   const baseStyle = state.night ? NIGHT_BASE_STYLE : DAY_BASE_STYLE;
   applyImageryStyle(layers.satellite, baseStyle);
   applyImageryStyle(layers.blue, baseStyle);
@@ -515,7 +516,6 @@ function updateLayerBlend() {
     layers.labels.alpha = 0.62 * labelAlphaScale;
   }
 
-  updateNightStyling();
   viewer.scene.requestRender();
 }
 
